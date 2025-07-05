@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>📚 Tarjetas de Estudio</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f0f4f8;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 30px;
+      color: #333;
+      font-size: 32px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      animation: slideInDown 0.8s ease-out;
+    }
+
+    @keyframes slideInDown {
+      from {
+        transform: translateY(-50px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .emoji {
+      display: inline-block;
+      animation: palpitar 1.5s infinite;
+    }
+
+    @keyframes palpitar {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
+    .entradas {
+      margin: 20px 0;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: slideInUp 0.8s ease-out 0.3s both;
+    }
+
+    @keyframes slideInUp {
+      from {
+        transform: translateY(30px);
+        opacity: 0;
+      }
+      to {
+        transform: translateY(0);
+        opacity: 1;
+      }
+    }
+
+    .entradas input {
+      padding: 10px;
+      border: 2px solid #3f51b5;
+      border-radius: 5px;
+      font-size: 16px;
+      outline: none;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      transform: translateY(0);
+    }
+
+    .entradas input:focus {
+      border-color: #303f9f;
+      box-shadow: 0 8px 16px rgba(63,81,181,0.3);
+      transform: translateY(-2px);
+    }
+
+    .entradas button {
+      padding: 10px 20px;
+      background: #3f51b5;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      transform: translateY(0);
+    }
+
+    .entradas button:hover {
+      background: #303f9f;
+      box-shadow: 0 8px 16px rgba(48,63,159,0.3);
+      transform: translateY(-2px);
+    }
+
+    .entradas button:active {
+      transform: translateY(0);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+
+    .tarjetas {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      max-width: 1000px;
+      animation: fadeIn 0.8s ease-out 0.6s both;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
+
+    .tarjeta {
+      width: 200px;
+      height: 140px;
+      perspective: 1000px;
+      position: relative;
+      transition: all 0.4s ease;
+      transform: translateY(0);
+    }
+
+    .tarjeta:hover {
+      transform: translateY(-5px) scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    .tarjeta.volteada:hover {
+      transform: translateY(-5px) scale(1.05);
+      filter: brightness(1.1);
+    }
+
+    .tarjeta-interior {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.8s ease;
+      transform-style: preserve-3d;
+      cursor: pointer;
+    }
+
+    .tarjeta.volteada .tarjeta-interior {
+      transform: rotateY(180deg);
+    }
+
+    .frente, .reverso {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      font-size: 18px;
+      padding: 10px;
+      color: #fff;
+      text-align: center;
+      box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+      transition: all 0.3s ease;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .frente {
+      background: linear-gradient(135deg, #4facfe, #00f2fe);
+    }
+
+    .reverso {
+      background: linear-gradient(135deg, #43e97b, #38f9d7);
+      transform: rotateY(180deg);
+    }
+
+    .boton-borrar {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: #e53935;
+      color: white;
+      border: none;
+      cursor: pointer;
+      padding: 4px 8px;
+      font-size: 12px;
+      border-radius: 50%;
+      z-index: 3;
+      transition: all 0.3s ease;
+      opacity: 0.7;
+      transform: scale(0.9);
+      backface-visibility: hidden;
+    }
+
+    .boton-borrar:hover {
+      background: #b71c1c;
+      opacity: 1;
+      transform: scale(1.1);
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+
+    .tarjeta:hover .boton-borrar {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .tarjeta.volteada .boton-borrar {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(0.5);
+      transition: all 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0%, 100% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+    }
+
+    .tarjeta-interior:active {
+      animation: pulse 0.3s ease;
+    }
+
+    @keyframes removeCard {
+      0% {
+        transform: scale(1) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: scale(0.5) rotate(15deg);
+        opacity: 0;
+      }
+    }
+
+    .tarjeta.removing {
+      animation: removeCard 0.3s ease-out forwards;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25% { transform: translateX(-5px); }
+      75% { transform: translateX(5px); }
+    }
+
+    .entradas.shake {
+      animation: shake 0.5s ease-in-out;
+    }
+
+    @media (max-width: 768px) {
+      .entradas {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .entradas input,
+      .entradas button {
+        width: 250px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1><span class="emoji">📚</span> Tarjetas de Estudio <span class="emoji">✏️</span></h1>
+
+  <div class="entradas" id="entradas">
+    <input type="text" id="pregunta" placeholder="❓ Escribe la pregunta">
+    <input type="text" id="respuesta" placeholder="✅ Escribe la respuesta">
+    <button id="agregarTarjeta">➕ Agregar Tarjeta</button>
+  </div>
+
+  <div class="tarjetas" id="contenedorTarjetas"></div>
+
+  <script>
+    const campoPregunta = document.getElementById('pregunta');
+    const campoRespuesta = document.getElementById('respuesta');
+    const botonAgregar = document.getElementById('agregarTarjeta');
+    const contenedorTarjetas = document.getElementById('contenedorTarjetas');
+    const entradas = document.getElementById('entradas');
+
+    campoPregunta.addEventListener('focus', () => {
+      campoPregunta.placeholder = '';
+    });
+
+    campoRespuesta.addEventListener('focus', () => {
+      campoRespuesta.placeholder = '';
+    });
+
+    campoPregunta.addEventListener('blur', () => {
+      if (campoPregunta.value.trim() === '') {
+        campoPregunta.placeholder = '❓ Escribe la pregunta';
+      }
+    });
+
+    campoRespuesta.addEventListener('blur', () => {
+      if (campoRespuesta.value.trim() === '') {
+        campoRespuesta.placeholder = '✅ Escribe la respuesta';
+      }
+    });
+
+    botonAgregar.addEventListener('click', () => {
+      const pregunta = campoPregunta.value.trim();
+      const respuesta = campoRespuesta.value.trim();
+
+      if (pregunta === '' || respuesta === '') {
+        alert('⚠️ Por favor, completa ambos campos.');
+        entradas.classList.add('shake');
+        setTimeout(() => {
+          entradas.classList.remove('shake');
+        }, 500);
+        return;
+      }
+
+      const tarjeta = document.createElement('div');
+      tarjeta.classList.add('tarjeta');
+
+      const tarjetaInterior = document.createElement('div');
+      tarjetaInterior.classList.add('tarjeta-interior');
+
+      const frente = document.createElement('div');
+      frente.classList.add('frente');
+      frente.innerText = `❓ ${pregunta}`;
+
+      const reverso = document.createElement('div');
+      reverso.classList.add('reverso');
+      reverso.innerText = `✅ ${respuesta}`;
+
+      const botonBorrar = document.createElement('button');
+      botonBorrar.classList.add('boton-borrar');
+      botonBorrar.innerText = '🗑️';
+
+      tarjeta.appendChild(botonBorrar);
+      tarjetaInterior.appendChild(frente);
+      tarjetaInterior.appendChild(reverso);
+      tarjeta.appendChild(tarjetaInterior);
+
+      tarjeta.addEventListener('click', (e) => {
+        if (e.target === botonBorrar) return;
+        tarjeta.classList.toggle('volteada');
+      });
+
+      botonBorrar.addEventListener('click', (e) => {
+        e.stopPropagation();
+        tarjeta.classList.add('removing');
+        setTimeout(() => {
+          if (contenedorTarjetas.contains(tarjeta)) {
+            contenedorTarjetas.removeChild(tarjeta);
+          }
+        }, 300);
+      });
+
+      contenedorTarjetas.appendChild(tarjeta);
+
+      campoPregunta.value = '';
+      campoRespuesta.value = '';
+      campoPregunta.placeholder = '❓ Escribe la pregunta';
+      campoRespuesta.placeholder = '✅ Escribe la respuesta';
+    });
+
+    [campoPregunta, campoRespuesta].forEach(input => {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          botonAgregar.click();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
+
+
+
+
+
+
+
